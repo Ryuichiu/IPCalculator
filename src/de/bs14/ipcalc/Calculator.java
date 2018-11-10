@@ -54,6 +54,7 @@ public class Calculator {
         return calcCidrFromIp(box.apply("Please enter a valid subnetmask as an IP"));
     }
 
+    //needs to be updated
     private String ipToBits(String ip) {
         var sb = new StringBuilder();
         String[] blocks = ip.split("[.]");
