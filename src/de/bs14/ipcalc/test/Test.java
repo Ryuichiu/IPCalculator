@@ -2,8 +2,18 @@ package de.bs14.ipcalc.test;
 
 import de.bs14.ipcalc.Calculator;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 public class Test {
     public static void main(String[] args) {
-        System.out.println(new Calculator("1",0).calcSubnetmaskAsBits(24));
+        var cac = new Calculator();
+        var cidr = 25;
+        var block = 255;
+        System.out.println(cac.calcSubnetmaskAsIp(cidr));
+        System.out.println(cac.calcSubnetmaskAsBits(cidr));
+        System.out.println("Max Hosts: " + cac.getMaxHosts(cidr));
+        System.out.println("CIDR: " + cac.calcCidrFromIp(cac.calcSubnetmaskAsIp(cidr)));
+        for (int i = 0; i < 9; i++) System.out.println(block /= 2);
     }
 }
