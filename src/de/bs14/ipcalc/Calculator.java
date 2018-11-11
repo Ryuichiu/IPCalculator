@@ -59,17 +59,13 @@ public class Calculator {
         var sb = new StringBuilder();
         String[] blocks = ip.split("[.]");
         int number;
-        for (int i = 0; i < blocks.length; i++) {
+        for (int i = blocks.length-1; i >= 0; i--) {
             number = Integer.parseInt(blocks[i]);
-            for (int j = 0; j < 8; j++) {
-                if (number != 0) {
-                    sb.append(1);
-                    number /= 2;
-                } else {
-                    sb.append(0);
-                }
+            while (number != 0) {
+                sb.insert(0,number % 2);
+                number /= 2;
             }
-            if (i < blocks.length-1) sb.append(".");
+            if (i > 0) sb.insert(0,".");
         }
         return sb.toString();
     }

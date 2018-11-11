@@ -2,9 +2,6 @@ package de.bs14.ipcalc.test;
 
 import de.bs14.ipcalc.Calculator;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
 public class Test {
     public static void main(String[] args) {
         var cac = new Calculator();
@@ -14,6 +11,5 @@ public class Test {
         System.out.println(cac.calcSubnetmaskAsBits(cidr));
         System.out.println("Max Hosts: " + cac.getMaxHosts(cidr));
         System.out.println("CIDR: " + cac.calcCidrFromIp(cac.calcSubnetmaskAsIp(cidr)));
-        for (int i = 0; i < 9; i++) System.out.println(block /= 2);
     }
 }
