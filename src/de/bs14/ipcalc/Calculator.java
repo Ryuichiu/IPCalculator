@@ -7,11 +7,9 @@ import java.util.function.Supplier;
 
 public class Calculator {
     private String adress;
-    private int adressAsInt;
     private String adressAsBits;
     private int maxHosts;
     private int cidr;
-    private String cidrString;
     private String subnetmask;
     private String range;
     private Function<Object, String> box = a -> JOptionPane.showInputDialog(null, a, "Error", JOptionPane.WARNING_MESSAGE);
@@ -28,11 +26,44 @@ public class Calculator {
     public int getMaxHosts(int cidr) {
         return new Double(Math.pow(2, 32-cidr)-2).intValue();
     }
+    public String getRange(String adress, int cidr) {
+        var host = getHostadress(adress,calcSubnetmaskAsIp(cidr));
+        var broadcast = getBroadcastadress(adress, calcSubnetmaskAsBits(cidr));
+        var hostBlocks = host.split("[.]");
+        var broadcastBlocks = broadcast.split("[.]");
+        hostBlocks[3] = Integer.toString(Integer.parseInt(hostBlocks[3])+1);
+        broadcastBlocks[3] = Integer.toString(Integer.parseInt(broadcastBlocks[3])-1);
+
+        var sb = new StringBuilder();
+        for (int i = 0; i < hostBlocks.length; i++) sb.append(hostBlocks[i]).append(".");
+        sb.append(" - ");
+        for (int i = 0; i < broadcastBlocks.length; i++) sb.append(broadcastBlocks[i]).append(".");
+        return sb.toString();
+    }
+
+    private String getHostadress(String adress, String subnetmask) {
+        var adressBits = ipToBits(adress);
+        var subnetmaskBits = ipToBits(subnetmask);
+        var sb = new StringBuilder();
+
+        for (int i = 0; i < 32; i++) {
+            sb.append((adressBits.charAt(i) == '1' && subnetmaskBits.charAt(i) == '1')?1:0).append((adressBits.charAt(i) == '.' && subnetmaskBits.charAt(i) == '.')?".":"");
+        }
+        return bitsToIp(sb.toString());
+    }
+
+    private String getBroadcastadress(String adress, String subnetmask) {
+        var adressBits = ipToBits(adress);
+        var subnetmaskBits = invertBits(ipToBits(subnetmask));
+        var sb = new StringBuilder();
+
+        for (int i = 0; i < 35; i++)
+            sb.append((adressBits.charAt(i) == '1' || subnetmaskBits.charAt(i) == '1')?1:0).append((adressBits.charAt(i) == '.' && subnetmaskBits.charAt(i) == '.')?".":"");
+        return bitsToIp(sb.toString());
+    }
 
     public String calcAdressAsBits(String ip) {
-        adressAsInt = Integer.parseInt(ip.replaceAll(".",""));
-        adressAsBits = Integer.toBinaryString(adressAsInt);
-        return adressAsBits;
+        return ipToBits(ip);
     }
 
     public int calcCidrFromBits(String subnetmaskAsBits) {
@@ -54,20 +85,39 @@ public class Calculator {
         return calcCidrFromIp(box.apply("Please enter a valid subnetmask as an IP"));
     }
 
-    //needs to be updated.
     private String ipToBits(String ip) {
         var sb = new StringBuilder();
         String[] blocks = ip.split("[.]");
         int number;
         for (int i = blocks.length-1; i >= 0; i--) {
             number = Integer.parseInt(blocks[i]);
-            while (number != 0) {
+            for (int j = 0; j < 8; j++) {
                 sb.insert(0,number % 2);
                 number /= 2;
             }
             if (i > 0) sb.insert(0,".");
         }
         return sb.toString();
+    }
+
+    //needs to be updated
+    private String bitsToIp(String bits) {
+        var sb = new StringBuilder();
+        String[] blocks = bits.split("[.]");
+        int number = 0;
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[i].length(); j++) {
+                number += (blocks[i].charAt(j) - 48)* new Double(Math.pow(2, j)).intValue();
+            }
+            sb.append(number);
+            if (i < blocks.length-1)   sb.append(".");
+            number = 0;
+        }
+        return sb.toString();
+    }
+
+    private String invertBits (String bits) {
+        return bits.replaceAll("0", "2").replaceAll("1", "0").replaceAll("2", "1");
     }
 
     public String calcSubnetmaskAsBits(int cidr) {
