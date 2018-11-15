@@ -5,6 +5,13 @@ import java.util.Stack;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Custom implementation of a network calculation application.
+ *
+ * @param adress The IP-adress.
+ * @param cidr  The CIDR-notation of the subnetmask.
+ * @author Luca Vollandt
+ */
 public class Calculator {
     private String adress;
     private String adressAsBits;
@@ -15,9 +22,9 @@ public class Calculator {
     private Function<Object, String> box = a -> JOptionPane.showInputDialog(null, a, "Error", JOptionPane.WARNING_MESSAGE);
     private Supplier<String> input = () -> JOptionPane.showInputDialog(null, "Please enter a valid CIDR", "Error", JOptionPane.WARNING_MESSAGE);
 
-    public Calculator(String adress, int maxHosts) {
+    public Calculator(String adress, int cidr) {
         this.adress = adress;
-        this.maxHosts = maxHosts;
+        this.cidr = cidr;
     }
 
     public Calculator() {
@@ -110,7 +117,7 @@ public class Calculator {
                 number += (blocks[i].charAt(j) - 48)* new Double(Math.pow(2, j)).intValue();
             }
             sb.append(number);
-            if (i < blocks.length-1)   sb.append(".");
+            if (i < blocks.length)   sb.append(".");
             number = 0;
         }
         return sb.toString();
